@@ -1,0 +1,155 @@
+SQLまとめ
+
+SELECT文
+・カラム名(列)を指定
+SELECT カラム名,カラム名,カラム名 FROM テーブル名
+
+・全取得
+SELECT * FROM テーブル名
+
+テーブル名、カラム名が長い場合はasで別名に変換することが可能
+
+・演算子の利用
+SELECT カラム名*10 FROM テーブル名
+SELECT カラム名/10 FROM テーブル名
+
+・条件指定WHERE句
+SELECT * FROM テーブル名 WHERE カラム名 >= 0
+SELECT * FROM テーブル名 WHERE カラム名 = 'SAMPLE'
+SELECT * FROM テーブル名 WHERE カラム名 = 'SAMPLE AND カラム名 >= 0
+	文字列は''で囲む必要がある
+	AND ORで複合条件が可能
+
+・条件指定(NOT)
+SELECT * FROM テーブル名 WHERE NOT カラム名 = 'SAMPLE'
+	NOTは条件式の前に記述
+
+	where 1=1でクエリが書きやすくなる。条件の追加時にandを書けばよいだけだから
+
+・ソート
+SELECT * FROM テーブル名 WHERE 条件式 ORDER BY カラム名 DESC
+	条件指定した対象に対してソートをする
+	ASC、DESCは最後に記述
+
+・範囲で抽出
+SELECT * FROM テーブル名 WHERE カラム名 BETWEEN A AND B
+			　　　 カラム名 >= A AND カラム名 <= Bと同じ
+
+・パターンマッチング
+SELECT * FROM テーブル名 WHERE カラム名 LIKE '%SAMPLE%'
+	%は0文字以上の任意の文字列
+	_1文字以上の任意の文字列
+
+・グループ化
+SELECT カラムA,集合関数() FROM テーブル名 GROUP BY カラムA
+	GROUP BYで指定したカラムが同じ値のデータをひとまとめにする
+	SELECTで指定できるのは、GROUP BYで指定したカラムか集合関数
+
+・グループ化への条件指定
+SELECT カラムA,集合関数() FROM テーブル名 GROUP BY カラムA HAVING 条件式
+	WHEREは条件指定を行った後にグループ化を行うが、HAVINGはグループ化を行った後に条件指定をする
+
+・重複行の排除
+SELECT DISTINCT カラム名 FROM　テーブル名
+
+・レコードの追加
+INSERT INTO テーブル名(カラム名,カラム名...) VALUES (値,値)
+	テーブルの全項目に値を追加する場合は(カラム名)を省略
+	
+・レコードの更新
+UPDATE テーブル名 SET カラム名=値,カラム名 = 値 WHERE 条件式
+
+・レコードの削除
+DELETE FROM テーブル名 WHERE 条件式
+
+・条件結合
+内部結合
+SELECT 列名
+FROM テーブル1
+INNER JOIN テーブル2
+ON テーブル1.キーとなる列名 = テーブル2.キーとなる列名
+INNER JOIN テーブル3
+ON.....
+	共通となる列をONで指定し、二つのテーブルをくっつける
+	結合条件がどちらかに存在しない場合、そのデータは省かれる
+
+外部結合
+LEFT/RIGHT/FULL OUTER JOIN
+	LEFT、RIGHTで指定した側のテーブルは全てのデータを含む。
+	外部結合は、結合条件がどちらかにしか存在しない場合もくっつける。その場合NULLが入る。
+
+
+・副問い合わせ
+SELECT * FROM テーブル名 WHERE カラム名 = (SELECT ...)
+	条件式にSELECTを使用する。SELECT...の結果比較可能な値を返す必要がある
+
+・IN
+SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
+	カラム名 = 値 OR カラム名 = 値Bと同じ意味
+
+・LIMIT 1　１件のみ取り出す
+
+・COUNT(*)はNULL行も含めてカウント。
+
+・集計関数() OVER()
+	集計関数と一緒に使用する。例えばSUMなら、各行に集計結果が表示される。
+	OVER (PARTITION BY) 列ごとに結果をグルーピングする
+	OVER (GROUP BY)列ごとに結果を出す。例えばsumなら、その列までの合計を各行に表示する。
+
+・||文字列連結
+
+・TIMESTAMP型	
+	"2019-03-01 10:00:00"
+	(日付　+ 時刻)
+
+・TIMESTAMP型にする
+	TO＿TIMESTAMP(文字列, ‘YYYY-MM-DD HH24:MI:00')←フォーマット指定可
+
+・DATE、TIMEを取り出す
+	CAST(TIMESTAMP AS DATE,TIME)
+
+・文字列置換
+	REPLACE(文字列, 置換前の文字列, 置換後の文字列)
+
+・interval型 
+	時間間隔を表現する。 + -等の算術演算子を用いてtimestamp型を加工できる 
+	SELECT column_time + interval '30 minutes' FROM table;
+
+・COALESCE(引数1, 引数2) nullでない最初の引数を返す
+
+・EXISTS(SELECT ~)問い合わせの内容が存在するか否かをtrue or falseで返す
+
+
+・CASE式
+CASE
+	WHEN　式　THEN 値
+	WHEN　式　THEN 値
+END
+
+
+PL/SQL
+・カラムを含むテーブルを取得
+SELECT table_name column_name
+  FROM information_schema.columns
+    WHERE column_name ='';
+
+
+・jsonは文字列を::jsonでキャスト可能
+無理ならエラーが出る
+
+
+・DECLARE
+	変数等の宣言部
+　BEGIN
+	処理部
+　END	
+
+
+・%TYPE
+	変数の型やサイズを参照できる
+	e_deptno  dept.deptno%TYPE; 
+
+・SELECT 要素 INTO STRICT 変数 
+	変数にSELECTでとってきた要素を代入
+
+	

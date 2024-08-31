@@ -1,0 +1,186 @@
+☑まずjs基礎
+次にts
+次にreact
+
+
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+
+node.jsとは
+	javascript実行環境、クライアント、サーバーどちらでも使用される
+	Webサーバーとしての機能を持ち、直接HTTPリクエストを受け取り処理をしてくれる
+	Node.jsではJavaScriptでOSの機能にアクセスするプログラムを組むことができる
+	ブラウザ上で動作していたときはできなかった自由なファイルの読み書きやネットワーク通信などのOSの機能を扱える
+★node-tsについて
+	トランスパイルしたjsを実行するのはめんどい。ts-nodeでファイル指定すれば、その場で実行できるので開発中に便利
+
+
+★npmについて
+	npm(ノードパッケージマネージャー) その名のとおりである。cliで操作する
+
+	npm init → packagejson作成
+	npm install 引数なし　→　packagejson内のdependenciesとdevDependenciesを参照してnode_modelsフォルダ（ない場合は作成）にパッケージをインストールする。
+	npm install パッケージ名 → packageをインストールし、package.jsonのdependenciedに記載する。基本的にパッケージはこれで管理する。
+
+package.jsonについて
+	package.jsonの存在するディレクトリが一つのパッケージの単位となる。プロジェクト。
+	dependenciesとdevdependencies
+	実行環境と開発環境の依存パッケージ。dependenciesに含まれるパッケージは、親パッケージが公開される場合一緒にインストールされる
+
+	scripts
+	コマンドのエイリアスである。npm run <name>で実行できる。何度も実行するようなコマンドはここで登録しておくと効率化できる(startは直接呼べる　npm start)
+
+	bin
+	コマンドのエイリアス(外から使うとき)のようなもの。公開しないのならあまり気にする必要はない。
+	外のパッケージへインストールされた場合、./node_modules/.bin/~で指定したコマンドを呼び出す
+
+	package-lock.json
+	npm install時に自動で作成される。
+	依存パッケージのバージョンはpackage.jsonに記載できるが、依存パッケージの依存パッケージについては記載できないため、開発メンバー間で差異が出る。
+	そこでpackage-lock.jsonは依存パッケージの依存パッケージまでバージョンを記憶する。
+
+npm ci
+	package-lock.jsonに記載されたバージョン参照してnpm installを行う。もし、package.jsonの内容と差異があればエラーを出す。
+	install時に一度no_modulesの中身を削除するので、クリーンインストールもできる
+
+
+		
+★javascript
+	ブラウザ上で動作する言語→node.jsで自由に開発可能になる
+	動的型付け言語。→typescriptで静的型付けが可能になる
+	javascriptではすべての値が真偽値をもつので、nullや空文字(""はfalse"  "はtrueなので注意)のチェックを行うときは値をそのままif()で調べればよい
+
+変数宣言
+	動的型付け言語のため、型は指定できない
+	定数はconst
+	変数はletを使って定義する
+	Javaのようにプリミティブ型に対してラッパークラスがある。自動で型変換が行われるのであまり気にしなくていい
+
+	変数を含んだ文字列表記
+		c#では$"文字列{変数}"で記述するが,、jsでは`文字列${変数}`で記述
+条件分岐
+条件演算子
+	基本的にc#と同じ
+	厳密等価( === !==)は同じ型でのみ比較を行う
+
+繰り返し文
+	for-of文　 for(const e of コレクション)
+
+配列
+配列の宣言
+	const array = [element1, element2];
+	jsでは型指定ができないので、いろんな型が配列に格納できる
+	また、配列自体は定数だが、要素は変数として扱う
+
+配列要素の追加とundefined
+	jsの配列は可変長である。そのため、要素が3つの配列arrayに対して、array[array.length] = ex　のような形で要素を追加できる
+	また、要素が3つの配列に対してarray[4]を指定することもでき、その場合array[3]にはundefinedが格納される。
+	undefinedは初期かれていない変数に割り当てられる	
+
+末尾・先頭への追加と削除
+	jsではキューやスタックの仕組みを表現するメソッドを配列が備えている
+	push()・・・末尾に追加
+	pop()・・・末尾を取り出す(戻り値として返す　)
+	shift()・・・先頭を取り出す
+	unshift()・・・先頭に追加
+
+ラムダ式
+	.map(action<T>())・・・要素の書き換え	
+	.filter(predictate<T>())・・・要素を条件絞り込み
+
+オブジェクト
+オブジェクトの生成
+	const objectA = {name : "obj"};
+	プロパティへのアクセスはobjectA.nameもしくはobjectA[name]でアクセスする
+	配列と同様にオブジェクト自体が定数であっても、プロパティの上書き追加等は可能
+
+for - in文
+	オブジェクトのプロパティを順番に処理する際に使用する。for-of文と同じ
+
+
+関数
+関数の宣言
+	function 関数名(引数){処理};
+	仮引数、戻り値の方は当然指定しないので何が戻るか、何を渡すかもわからない。戻り値を指定せずreturn;とした場合undefinedを返す
+関数式
+	const test = function(){処理};
+	呼び出しは変数名();
+	const arrow = () => {処理};
+	アロー関数と呼ばれる記法
+メソッド
+	メソッドはオブジェクトのプロパティとして定義する
+	const objectA = {
+			name : "obj",
+			method(`this is ${this.name}.`){処理}
+			};
+	呼び出しは objectA.method();
+
+	thisは実行されるターゲットのオブジェクトを指定する
+	変数を含む文字列は `文字列${変数}`で記述する
+
+
+分割代入
+	メソッドの戻り値が配列やオブジェクトの場合、分割代入ができる。
+	オブジェクトの場合はプロパティ名と同じ変数名にする必要がある。
+	const [a, b, c] = ["A", "B", "C"];
+	
+
+クラス
+	コンストラクターはconstructor()と記述
+		基底クラスはsuperでアクセス
+	
+	
+Mapクラス
+	ディクショナリ。キーとバリューをもつ。
+	const map = new Map();
+	map.set(key, value);
+	map.get(key); 取得できない場合はundefinedを返す。!が有効。
+
+
+非同期関連
+	・Promiseは非同期処理を行うインスタンス
+		new Promise( (resolve, reject?) => 
+		{
+			// 非同期で行う何らかの処理
+
+			// 処理がうまく行った場合
+        		resolve(渡すパラメータ);
+
+        		// 処理が上手くいかなかった場合
+        		reject(渡すパラメータ);
+		})
+
+		第一引数にresolve関数,　第二引数にreject関数を渡す。rejectは無くてもよい。
+		このインスタンスを戻り値とする関数を作ることで、非同期処理を行うことができる。
+
+		PromiseオブジェクトにはPromiseStatusプロパティがあり、処理中はpenfding、resolve()時にresolved、rejected()にrejectedとなる
+
+
+	・Promise<T>.then((value : T) => {}) / catch()
+		引数valueはPromise自身が返すresolvedの場合の型パラメータの値を受けとる
+		catch()はrejectedの場合の方パラメータの値を受け取る
+
+
+	・Promiseの静的メソッド
+		Promise.all( array :  Promise<T>[])
+			Promise<T>の配列を引数に取る。配列内の全てのPromiseがresolvedになった時にthen()が実行される
+			thenのパラメータも配列で渡される。いずれかひとつがfalseの場合は、catch()が呼び出される
+		Promise.race 
+			allのいずれかひとつバージョン
+
+
+	・async/await
+		asyncメソッドは必ず、then()を持たない値の場合でも、あたかもresolvedされたかのようにPromiseでラップして返す。
+		awaitキーワード　await new Promiseとすることで、Promise()内の非同期処理をresolve()されるまで待機する。
+
+
+
+||演算子のテクい使い方
+A || B　とあるとき、AがfalseならBを返す。
+
+
+
+メモ
+モジュールファイルを実行してみたいです。
+プロパティ関数使えねーぞ
+
+

@@ -1,0 +1,280 @@
+・バージョン管理について
+	githubとsorcetreeを利用する。
+		ローカルリポジトリを自分のpcに作成。
+			ローカルリポジトリとして指定したディレクトリ内に.gitフォルダと.gitignoreファイルが作成され、このディレクトリ以下のファイルの更新を監視する。
+		リモートリポジトリをGitHubにて作成。この時gitignoreをUnityに指定するように。
+		SorceTree内で設定→リモートリポジトリのURLを入力し、適当な名前を付けてローカルリポジトリと連携させる。
+		Unityの作業後に、変更内容をコミット(ローカルリポジトリ内で記録を付ける)。その後プッシュ(リモートリポジトリにも記録を付ける)。ブランチの選択はこの時に行う
+			直接mainブランチ(デフォルトのブランチ)にプッシュした場合はそのままリモートリポジトリも更新される
+			ブランチを作成、もしくはmain以外のブランチへプッシュした場合はリモートリポジトリ内の別のブランチが更新される。mainブランチへはプルリクエストを行い、マージを行うことで合体する。
+	
+		
+
+・LayerMask　：　<<(左シフト演算子)は2進数の値を左にずらして空いた桁に0をを追加する。
+例) レイヤー番号0と1と2のレイヤーを指定：1 << 0 (1) | 1 << 1 (10) | 1 << 2 (100) 
+ ※LayerMask型があるが、raycastで使用するのはint型なので注意！
+
+・cullingMaskはカメラでレンダリングする対象をlayerで指定できる。指定方法はLayaerMaskと同じ
+
+・UIのImageコンポーネント内のRayCastTargetプロパティは、Raycastの対象として有効か無効かを操作できる。
+
+・同Canvas内のUIの描画は、ヒエラルキー内の下ほど手前に表示される
+
+・Time.timeScale = 0　は rigidBody関連、FixedUpdate()など時間と関連する処理を全て止める。Updateは止まらない(Time.deltaTimeの部分は止まる)
+
+・window > Analysis > ProfilerからＵnity内の処理の重さを確認できる。
+	HierarchyでRecordingすることでFPSがっさがっている個所を確認し、TimeLine内でどの処理に時間がかかっているか等を見れる
+
+・CharacterControllerの当たり判定について
+RBの場合と同様に、OnTrigger、OnColliderが使用できる。
+
+・Updateは入力関連で遅延が生まれずらい。FixedUpdateは計算処理関連(移動)で、フレーム間のずれや誤差を生まない。
+
+・navmeshの取得経路の最初はほぼ真下に出現するため、削除するとスムーズになる。
+	navmeshAgentのobjectAvoidanceはエージェントを他のエージェントから見て障害物として認識する。(navmeshは変わらないので経路は同じ)
+	noneにした場合は他のエージェントがすり抜けていく(他のエージェントがnoneでないなら、それを押す)。あくまで他のエージェントから見てぶつかるかどうかを決定する
+	priorityが自分より低いオブジェクトにぶつかった場合はすり抜けていく
+	
+
+・navmeshObstacleはnavmeshに障害物として認識される。agentと一緒に使用するとおかしくなる
+	carveはnavmeshを彫刻する。これによりagentはobstacleを避けて経路探索を行う	
+ オブジェクトのnavmeshstaticにチェックを入れることで、bakeの対象になる	
+
+・カメラがカクカクするときは対象とカメラが、呼び出されるタイミングを同一にする。
+
+・配列の中身は初期化される(初期化時に要素数を指定する)が、リストは可変長(要素数を決定しない)なので中身が初期化されない。要素数を指定すればおそらく初期化される←マジで注意
+
+・transform.Findは一階層下の子まで。Find(子/孫)というように/で下の階層まで探せる。
+	GetComponentsInChildは自身を含む全ての子要素。
+	GetComponentInParentは自身を含むすべての親要素
+	transform.rootで一番上の階層の親を取得
+	transform.DetachChilderen()で子オブジェクト全てを親子関係解除
+
+・GetComponent<>()はインスペクター上の順番を参照しており、2つ同じ型のコンポーネントがある場合は上を優先する。
+	GetComponentは非アクティブなオブジェクトも取得するが、GetComponentInChildrenは非アクティブなオブジェクトを取得しない。引数にtrueを指定するとできる。
+
+・transform.siblingIndex　子オブジェクトのヒエラルキー上での順番をインデックス番号で持つ
+
+・transform.forwardは正面(z軸)に向かって単位1の方向ベクトルを返すが、オブジェクトの現在座標からでなく原点からの座標で返すので注意
+
+・シャローコピーで、片方の変数でインデックス番号を変えた場合は、同じインスタンスにもかかわらず、二つの変数でインデックス番号の並びが変わるので注意。
+
+・アニメーションイベントの呼び出しはAnimatorと同じ階層に送られる。
+	アニメーションイベントは、animator内の遷移でexitTime次第で呼ばれない可能性があるので注意。また途中で他に遷移した場合にも呼び出されないので注意。
+
+・Animator.GetCurrentAnimatorStateInfo(layer)で現在のステートの状態を取得できる
+	AnimatorのインスペクターからUpdateModeを選択することで、TimeScaleに依存しない設定にできる。デフォルトはTimeScaleで動く
+	Animator.GetCrrentStateInfo.normalizedTime 整数部分がループ回数、小数部分はアニメーションの進行度を%で示す。
+	Animatorのtransitionにおけるsoloとmute
+				soloではその遷移のみが有効になる。muteではその遷移は無効になる。デバッグで使用する。
+・Destroy()は呼び出した現在のフレームまではまだ破棄されていないため注意(削除は重いので、オブジェクトプーリング？をすると良いとか。)
+	★UnityのDestroy()では偽装nullというオブジェクトが作成される。内部のisDestroiedがtrueになるだけで、参照自体は残っている。==がオーバーライドされてnull判定される
+　	GCの対象ではあるので、ローカル変数で参照されているだけであれば勝手に消えるが、フィールドの場合は回収されず残り続ける。つまり削除後も参照が可能。
+・OnDestroyはシーン停止時にも呼び出されるため、OnDestroy内でinstatiateをするとシーンにゴミが残る	
+
+・Vector3.Dot()の内積は、二つのオブジェクトの前後関係を調べることができる
+	Vector3.Lerp(a, b, float t)の線形補完は、(1-t)a + tbであらわされる。t=0のとき始点aで、t=1の時終点b。
+
+・TextMeshProは従来のTextより高機能。フォントを変更する際に、window > TextMeshPro > FontAssetCreatorでフォントアセットを作成する必要がある。
+	フォントアセットにはstaticとdyanmicがある。
+		staticはアセット作成の際に、対応する文字を入力してフォントアトラス(Texture)を作成しておく。
+		dynamicは空のフォントアトラスに、随時文字が刻まれていく仕組み。
+	参照しているフォントファイル(ttf、otf)が対応していない文字はそもそも描画できない。
+	フォントアセットのfallbackfontassetに、他のフォントアセットを登録することで、そのアセット内の文字も使用できる。
+	textをスクリプトから操作する際には、TextMeshProUGUIクラスのtextプロパティからなので注意。
+	TMPROにはraycastTargetがデフォルトでオンになっているので注意
+	
+・Addressables
+AASのLoasAssetAsyncはeditor上ではサポートされていない。
+そのため、Editor拡張ではAssetDatabaseインターフェエイスからアセットをロードする。
+その際、entry（アセット）の取得自体はできるので、取得したエントリのguidやaddressを参照して利用するといい
+
+・UI要素をInstantiateする場合は、親にCanvasのRextTransform(Transfromを継承しているので)を指定する
+
+・UI要素を並べるGridLayoutに対して、layoutelementコンポーネントは一つだけ例外的な扱いをできる
+
+・terrain関係の知識
+	3dGameobjectとしてcreateできる地形オブジェクト。terrain、terrainColliderの二つのコンポーネントがついている。
+		terrainはtransformでは大きさを変えられない。terrainコンポーネントの設定から変更する
+
+	terainコンポーネントのブラシ(タイル追加、地形作成、木、草等のオブジェクト、設定)から編集を行う。
+		草等のオブジェクトペイント(Deatailペイント)において、LODGROUPコンポーネントがついたものは使用不可なので注意
+		地形のテクスチャペイントにおいて、normalMapは地形表面の質感を表現する
+			
+	terrainCollliderのテレインデータに地形データが保存されている。タイル追加時にはterrainが一つ追加される。一つのterrainにつき、一つのterrainデータ。
+
+	LODコンポーネント(レベルオブディティール)・・オブジェクトがカメラから遠のいた際の描画レベルを表す。描画レベルに合わせて複数のモデルが必要
+	billboard・・ハリボテの事。常にカメラの方を向く。	
+
+・terrainData.GetAlphamapTexture(x,z,alphamapwidth,alphamapheight);
+	引数には調べたい地点(ここが原点となる)と、サンプリングするテクスチャのサイズを渡す。
+	戻り値は3次元配列(x,y,weight)
+	1,2次元目はサンプリングしたサイズの座標分だけ長さがある。
+	もし1×1なら(0,0)のみ
+	もしalphamapの横 × 縦ならaplatalphaテクスチャのサイズと同じだけある。
+	3次元目の配列の長さはterrainDataに含まれるterrainLayerの数だけある。
+	よって1×1でサンプリングすると、ウェイトだけが含まれるデータが取得できる。
+	(0,0,weigth)(0,0,weigth)(0,0,weigth) = weightの1次元配列
+	
+・ライティング・レンダリング関係
+	skyboxとフォグ(地平線のぼやかし)はwindow>rendering>enviromentから設定する
+	ポストプロセスはpackagemanagerからインストールしないと使えない。
+		使用手順
+		カメラにpostprocessinglayerコンポーネントを設定し、エフェクトをかけるのに必要な適当なオブジェクトAのレイヤーを指定。AのレイヤーはpostProcessingを指定
+		postprocessingvolumeコンポーネントをAに設定。effectを追加していく。カラーグラデーションはマスト。
+
+・EventSystem.current.IsPointerOverGameObject()でUGUI上にマウスカーソルがあるか返す
+
+・UIのSliderがクリックできてしまう→interatableをオフにしないとつまみを削除していても操作できてしまうので注意
+	というのもsliderはbackgroundが当たり判定を持っているため
+・UIのnavigationは使わないならnoneにしたほうがいい。誤作動をすると意図しない形で、選択を行ってしまう。
+
+・AddListenerは引数無デリゲート型UnityActionを引数に取る。引数を渡したい場合は() => {メソッド(引数)}とかく
+
+・UnityのAPIはメインスレッドからしか呼び出せないものが多く、Taskを使った非同期処理では呼び出せなかったりする。
+	Unity専用のTaskを導入するライブラリ、Unitaskを使う方がいいらしい
+
+・OnEnable()、OnDisable()ゲームオブジェクトがアクティブになった時、非アクティブになった時、毎回呼び出される
+
+・EventTriggerをScript内で実装する  EventSystemを使って登録を行う場合、一つ一つにコンポーネントを付与しメソッドを登録する必要があるため、登録し忘れなどが起きる。
+					EventSysytem名前空間のインターフェイスを実装すれば、On～イベントを実装する必要があるので登録し忘れなどがない。
+	これらのインターフェイスは、単独ではうまく動作しない可能性がある。つまりOnEnterやOnExitとセットで使用しないと、イベントを検知できない可能性がある。
+	IDragHandlerインターフェイス・・OnDrag(PointerEventData data){ドラッグ中の処理}
+	IDropHandlerインターフェイス・・OnDrop(PointerEventaData data){ドラッグして落とした時の処理} 
+					※マウスからレイキャストして、オブジェクトが落ちたことを検知するので、ドラッグ中のオブジェクトはレイを貫通するようにする。
+					CanvasGroupコンポーネントの、BlocksRaycastプロパティで変更可
+	SceneManager.loadScene デリゲートでメソッドを登録できる。登録されたメソッドはシーンロード時に呼び出される。呼び出し順はstartの前
+	Scenemanager.sceneUnloadedはシーンがDestoyされた後に呼び出されるので、セーブはこのデリゲートに登録すべきではない
+
+・projectSettings > ScriptExecutionOrderからスクリプトの実行順を制御できる
+
+・InputFieldをスクリプトから設定する際にはTMP_InputFieldクラスからなので注意
+	GetComponent<TMP_InputField>().onEndEdit.AddListner(Action<Text>);引数のtextは入力される文字
+
+・Ontrigger等のコールバックイベントはコンポーネントがオフでも作動する
+
+・Application.persistentDataPath　Unityの標準永続データ保存用ディレクトリ
+
+・System.Guid.NewGuid.ToString()でユニークIDを生成できる。
+
+・IserializationCallbackReceiverを実装することで、シリアライズを可能にする。
+→OnBefeoreSerialize()内にて、シリアライズ可能なフィールドにデータを格納する。
+→OnAfterSerialize()jsonで取得したデータからから、オブジェクトを復元するようにする
+
+・Monobehaviorはインスタンス生成new()ができない→スクリプトで生成するならadressableでロードするとよい。
+
+・ExposedRefference<T>はScriptableObjectやPlayableAsset等のアセットにおいて、シーンオブジェクトへの参照を得る際に使用する。
+
+・色違いオブジェクトを作るときは、シーン上のオブジェクトのskinnedmeshrendererのマテリアルを直接変更すればよい
+
+・Random.Rangeの罠
+	Random.Rangeは戻り値がfloatの場合第一引数以上、第二引数以下で、intの場合は第二引数未満となる。
+	Randomクラスはシード値を元に乱数を作成するので、シード値をランダムにしてやらないと毎回同じになる。Randomn.initState(float seed)
+	
+・シーンビューの背景色を変更する場合は、edit>preference>color>backgroundで変更可能
+
+・inspectorの日本語文字化け
+以下の内容のeditorconfigファイルをsolutionファイル（sln）と同じ階層に保存する
+root = true
+[*.cs]
+charset = utf-8-bom
+
+★timeline
+ディレクターはインスタンス
+	オブジェクトのバインドはこっちでする
+	別のシーンのオブジェクトや、生成したオブジェクトをバインドする動的バインドも可能
+		https://tsubakit1.hateblo.jp/entry/2017/04/26/221548#f-7a715cce
+playableアセットは設計図(scriptableObject)
+playabletrackについて
+	playabletrackはスクリプト制御を行える。
+		behaviourとassetのc#スクリプトの作成をして使う
+		behaviourにはイベント駆動型関数が存在するので、その中に記述
+
+＿＿＿＿拡張機能
+
+★エディタ拡張
+・Editorという名前のフォルダを作成して格納
+もしくは
+#if UnityEditor
+#end if
+で条件付きコンパイルを行うことで、Editorフォルダに入れなくても同じファイル内でエディタ拡張が可能。
+・EditorWindow を継承するスクリプトを作成
+
+
+//ウィンドウを呼び出し表示するコード
+ [MenuItem ("Window/My Window")] ← [MenuItem(root/path)]はstatic関数にのみ付与できる
+    public static void  ShowWindow () 
+{
+	EditorWindow.GetWindow(typeof(MyWindow));
+}
+
+
+・ツールのための GUI コードを実装
+void OnGUI () {
+        //  実際のウィンドウのコードはここに書きます
+    }
+
+OnGUI、OnInspectorGUIはエディタモードで呼び出される
+	
+
+★インスペクタ拡張
+・[SerializeField]のような属性付与
+	[SerializeField, Tooltip("")] インスペクターのフィールドにマウスカーソルを乗せた時の説明が出る
+	[Range(min, max)]最大最小を設定できる
+	[header] インスペクターのフィールドの上にカテゴリ等をつけられる。似たようなフィールドをカテゴライズするのに便利
+	[ContextMenu]関数につけるattribute。inspector上でその関数を実行できる。シーンのセットアップに便利
+	[System.Serializable]　クラス、または構造体がシリアライズ可能であることを示す
+・Editorクラスを継承したクラスの実装
+・インスペクター拡張クラスにおけるフィールドは、対象クラスのインスペクターを表示するたびに初期化される
+
+
+[CustomEditor(typeof(対象のクラス))]←どのクラスを対象にするか指定
+public class CustomInspectorSample : Editor ←　Editorを継承
+{
+    public override void OnInspectorGUI()
+    {
+	serializedObject.Update();←対象クラスを更新
+	//ファイルに飛べるようにする
+        using(new EditorGUI.DisabledGroupScope(true))
+        {
+            EditorGUILayout.ObjectField("Script", MonoScript.FromMonoBehaviour((MonoBehaviour)target), typeof(MonoScript), false);
+        }
+	対象オブジェクトの特定のプロパティと入力フィールドをリンク
+        serializedObject.FindProperty(nameof(CustomSample.enemyName)).stringValue = EditorGUILayout.TextField("Enemy name", serializedObject.FindProperty(nameof(CustomSample.enemyName)).stringValue);
+        serializedObject.FindProperty(nameof(CustomSample.hp)).intValue = EditorGUILayout.IntField("HP", serializedObject.FindProperty(nameof(CustomSample.hp)).intValue);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(CustomSample.power)));
+        serializedObject.ApplyModifiedProperties();←保存
+    }
+}
+
+★アセットインポート時のフック
+
+・対象のアセット全てに処理が入るため使用する際には注意が必要。
+以下のような条件をつけて事故を防ぐ
+	・特定のフォルダに含まれている事
+	・メタファイルが存在しない事(初回インポート時のみ)
+
+public class UIPostProcessor : AssetPostprocessor ←　AssetPostProcessorを継承
+{
+    void OnPostprocessTexture(Texture2D texture)
+    {
+	//アセットパスを取得
+        string lowerCaseAssetPath = this.assetPath.ToLower();
+
+        //Pictures/UIフォルダ下のテクスチャファイルのみが対象
+        if (lowerCaseAssetPath.Contains("pictures/ui") is false)
+        {
+            Debug.Log("これは対象外です");
+            return;
+        }
+        else
+        {
+            TextureImporter importer = this.assetImporter as TextureImporter;
+            //初回インポート時のみが対象
+            if (importer.importSettingsMissing is false) return;
+            importer.textureType = TextureImporterType.Sprite;
+            importer.alphaIsTransparency = true;
+            importer.filterMode = FilterMode.Trilinear;
+        }
+    }
+}
