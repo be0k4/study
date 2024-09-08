@@ -8,7 +8,6 @@ SELECT カラム名,カラム名,カラム名 FROM テーブル名
 SELECT * FROM テーブル名
 
 テーブル名、カラム名が長い場合はasで別名に変換することが可能
-	selecetで取得した要素に対してエイリアスをつけても、それを条件等で使用することはできない
 
 ・演算子の利用
 SELECT カラム名*10 FROM テーブル名
@@ -78,7 +77,6 @@ ON.....
 LEFT/RIGHT/FULL OUTER JOIN
 	LEFT、RIGHTで指定した側のテーブルは全てのデータを含む。
 	外部結合は、結合条件がどちらかにしか存在しない場合もくっつける。その場合NULLが入る。
-	テーブルの関係が1対1か1対Nかで結果が変わるので、そこを意識するように
 
 
 ・副問い合わせ
@@ -93,11 +91,10 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 
 ・COUNT(*)はNULL行も含めてカウント。
 
-・OVER()
-集計関数() OVER()で記述
-	集計関数と一緒に使用する。各行に集計結果が表示される。
-	OVER (PARTITION BY) 結果を指定したカラム名でグルーピングする
-	OVER (PARTION BY ~ ORDER BY~)グルーピングされた中で、集計結果を行区切りで表示する
+・集計関数() OVER()
+	集計関数と一緒に使用する。例えばSUMなら、各行に集計結果が表示される。
+	OVER (PARTITION BY) 列ごとに結果をグルーピングする
+	OVER (GROUP BY)列ごとに結果を出す。例えばsumなら、その列までの合計を各行に表示する。
 
 ・||文字列連結
 
@@ -107,7 +104,6 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 
 ・TIMESTAMP型にする
 	TO＿TIMESTAMP(文字列, ‘YYYY-MM-DD HH24:MI:00')←フォーマット指定可
-	フォーマットが違う場合比較できない。なので文字列に変換して比較を行うとよい。
 
 ・DATE、TIMEを取り出す
 	CAST(TIMESTAMP AS DATE,TIME)
@@ -122,7 +118,6 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 ・COALESCE(引数1, 引数2) nullでない最初の引数を返す
 
 ・EXISTS(SELECT ~)問い合わせの内容が存在するか否かをtrue or falseで返す
- NOT EXIST(SELECT) 紐づかない条件
 
 
 ・CASE式
@@ -130,24 +125,6 @@ CASE
 	WHEN　式　THEN 値
 	WHEN　式　THEN 値
 END
-
-・UNION ALL
-	SELECT ~
-	UNION ALL
-	SELECT ~
-	テーブルのレコードを一つに統合する。2つのSELECTの結果、カラム数やデータ型が同じである必要がある。
-	特定の値と紐づくテーブル、紐づかないテーブルの結果をUNIONすることで、二つの場合のSQL文をひとつで書ける。
-
-・GENERATE_SERIES(start, stop, step)
-	startからstopまでを連番で表示する。stepで間隔を指定する。
-	SELECT句で指定する場合少し癖がある。
-	SELECT GENERATE_SERIES(1, 3) AS NO, 1 AS ANOTHER, 2 AS OTHER;
-
-	→ NO	ANOTHER	OTHER
-	   1	1	2
-	   2	1	2
-	   3	1	2
-みたいな感じで、他のカラムとくっつく
 
 
 PL/SQL
@@ -165,8 +142,6 @@ SELECT table_name column_name
 	変数等の宣言部
 　BEGIN
 	処理部
-　EXCEPTION
-	//Exceptionはそれが含まれるブロック内でエラーをキャッチする
 　END	
 
 
@@ -176,6 +151,5 @@ SELECT table_name column_name
 
 ・SELECT 要素 INTO STRICT 変数 
 	変数にSELECTでとってきた要素を代入
-	SELECTの結果が1件も返さない、もしくは1行以上返す場合はerrorを吐く
 
 	
