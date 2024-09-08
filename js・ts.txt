@@ -1,8 +1,3 @@
-☑まずjs基礎
-次にts
-次にreact
-
-
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 
 node.jsとは
@@ -17,9 +12,9 @@ node.jsとは
 ★npmについて
 	npm(ノードパッケージマネージャー) その名のとおりである。cliで操作する
 
-	npm init → packagejson作成
+	npm init → package.json作成
 	npm install 引数なし　→　packagejson内のdependenciesとdevDependenciesを参照してnode_modelsフォルダ（ない場合は作成）にパッケージをインストールする。
-	npm install パッケージ名 → packageをインストールし、package.jsonのdependenciedに記載する。基本的にパッケージはこれで管理する。
+	npm install パッケージ名 → packageをインストールし、package.jsonのdependenciesに記載する。基本的にパッケージはこれで管理する。
 
 package.jsonについて
 	package.jsonの存在するディレクトリが一つのパッケージの単位となる。プロジェクト。
@@ -40,7 +35,7 @@ package.jsonについて
 
 npm ci
 	package-lock.jsonに記載されたバージョン参照してnpm installを行う。もし、package.jsonの内容と差異があればエラーを出す。
-	install時に一度no_modulesの中身を削除するので、クリーンインストールもできる
+	install時に一度node_modulesの中身を削除するので、クリーンインストールもできる
 
 
 		
