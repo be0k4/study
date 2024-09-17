@@ -44,7 +44,7 @@ SELECT * FROM テーブル名 WHERE カラム名 LIKE '%SAMPLE%'
 ・グループ化
 SELECT カラムA,集合関数() FROM テーブル名 GROUP BY カラムA
 	GROUP BYで指定したカラムが同じ値のデータをひとまとめにする
-	SELECTで指定できるのは、GROUP BYで指定したカラムか集合関数
+	一度GROUP BYを使用すると、SELECTではGROUP BYで指定したカラムしか指定できない
 
 ・グループ化への条件指定
 SELECT カラムA,集合関数() FROM テーブル名 GROUP BY カラムA HAVING 条件式
@@ -59,7 +59,15 @@ INSERT INTO テーブル名(カラム名,カラム名...) VALUES (値,値)
 	VALUESの代わりにSELECT文で挿入することもできる
 	
 ・レコードの更新
-UPDATE テーブル名 SET カラム名=値,カラム名 = 値 WHERE 条件式
+UPDATE テーブル名 SET カラム名=値,カラム名 = 値... WHERE 条件式
+
+UPDATEでLIMITやJOINを使う方法
+	WHERE句の中でサブクエリを使う
+	UPDATE テーブルA SET カラム名=値 WHERE テーブルA.~ IN (SELECT~ LIMIT)
+
+postgreSQL特有の機能
+	UPDATEにFROMをつけてテーブルをJOINできる
+	UPDATE テーブルA SET カラム名=値,カラム名 = 値 FROM テーブルB WHERE 条件式
 
 ・レコードの削除
 DELETE FROM テーブル名 WHERE 条件式
@@ -82,7 +90,7 @@ LEFT/RIGHT/FULL OUTER JOIN
 	テーブルの関係が1対1か1対Nかで結果が変わるので、そこを意識するように
 
 
-・副問い合わせ
+・副問い合わせ(サブクエリ)
 SELECT * FROM テーブル名 WHERE カラム名 = (SELECT ...)
 	条件式にSELECTを使用する。SELECT...の結果比較可能な値を返す必要がある
 
