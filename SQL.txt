@@ -102,7 +102,8 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 ・LIMIT 1　１件のみ取り出す
 
 ・COUNT(*)はNULL行も含めてカウント。
-
+	count(distinct) 指定したカラムから重複を除いてカウントする
+	
 ・OVER()
 集計関数() OVER()で記述
 	集計関数と一緒に使用する。各行に集計結果が表示される。
@@ -137,10 +138,15 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 
 
 ・CASE式
-CASE
-	WHEN　式　THEN 値
-	WHEN　式　THEN 値
-END
+	CASE
+		WHEN　式　THEN 値
+		WHEN　式　THEN 値
+	END
+
+・With句
+	WITH 名前 AS (SELECT 列名 FROM テーブル)
+	SQLの冒頭で記述することで、サブクエリを作成できる。
+	可読性の向上やメンテナンス性の向上につながる	
 
 ・UNION ALL
 	SELECT ~
@@ -158,10 +164,12 @@ END
 	   1	1	2
 	   2	1	2
 	   3	1	2
-みたいな感じで、他のカラムとくっつく
+みたいな感じで、他のカラムとくっつく。連番を振りたい時に使う。
 
+・DROP TABLE テーブル名 CASCADE
+	テーブルを削除する。CASCADEでこのテーブルに依存するオブジェクトも削除する	
 
-PL/SQL
+★PL/SQL★
 ・カラムを含むテーブルを取得
 SELECT table_name column_name
   FROM information_schema.columns
@@ -174,7 +182,7 @@ SELECT table_name column_name
 
 ・DECLARE
 	変数等の宣言部
-　BEGIN
+  BEGIN
 	処理部
 　EXCEPTION
 	//Exceptionはそれが含まれるブロック内でエラーをキャッチする
@@ -185,8 +193,54 @@ SELECT table_name column_name
 	変数の型やサイズを参照できる
 	e_deptno  dept.deptno%TYPE; 
 
+
 ・SELECT 要素 INTO STRICT 変数 
 	変数にSELECTでとってきた要素を代入
 	SELECTの結果が1件も返さない、もしくは1行以上返す場合はerrorを吐く
 
+・RAISE INFO %, 変数;
+	変数の中身を表示する。%に変数が代入される
+
+・条件分岐
+ IF　... THEN
+ ELSEIF ...　THEN
+ END IF;
+
+・単純なループ
+ LOOP
+ 処理部
+ EXIT;--ループを抜け出す
+ LOOP END;
+
+・FORループ
+数値から数値までの回数ループを行う
+
+ FOR i IN 数値..数値 LOOP
+ 処理
+ END LOOP
+
+・カーソル
+問い合わせの結果を1行ずつ取り出せるオブジェクト
+
+ CURSOL カーソル名 IS 問い合わせ文; --カーソルの定義
+
+ OPEN カーソル名; --カーソルの生成
+
+ FETCH カーソル名 INTO 変数名　カーソルから行取り出して変数に代入する
+
+ CLOSE カーソル名 --カーソルの破棄。メモリを確保できる
+
+★カーソルループ
+	FOR文に組み込むことで、カーソルの定義以外を省略できる。
+	FOR ループ変数名 IN カーソル名 LOOP
+	処理
+	END LOOP
 	
+	ループ変数はレコードと同じ型になるので、ループ変数名.カラム名でアクセスする。
+	全てのレコードをFETCHするとループ終了する
+
+・PERFORM
+実行結果が不要な場合に使う。
+PERFORM FUNCTION()
+PERFORM * FROM ~ 
+	SELECT の代わりにPERFORMを使う。
