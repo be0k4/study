@@ -5,6 +5,12 @@ node.jsとは
 	Webサーバーとしての機能を持ち、直接HTTPリクエストを受け取り処理をしてくれる
 	Node.jsではJavaScriptでOSの機能にアクセスするプログラムを組むことができる
 	ブラウザ上で動作していたときはできなかった自由なファイルの読み書きやネットワーク通信などのOSの機能を扱える
+★nvm
+	node version manager その名の通り、node.jsのバージョンを管理するプログラム
+	nvm install 対象のnodeバージョン
+	nvm ls インストール済みのnodeのバージョン一覧
+	nvm use 対象のnodeバージョン　これでバージョンを切り替える
+
 ★node-tsについて
 	トランスパイルしたjsを実行するのはめんどい。ts-nodeでファイル指定すれば、その場で実行できるので開発中に便利
 
@@ -15,6 +21,9 @@ node.jsとは
 	npm init → package.json作成
 	npm install 引数なし　→　packagejson内のdependenciesとdevDependenciesを参照してnode_modelsフォルダ（ない場合は作成）にパッケージをインストールする。
 	npm install パッケージ名 → packageをインストールし、package.jsonのdependenciesに記載する。基本的にパッケージはこれで管理する。
+	npm ci
+		package-lock.jsonに記載されたバージョン参照してnpm installを行う。もし、package.jsonの内容と差異があればエラーを出す。
+		install時に一度node_modulesの中身を削除するので、クリーンインストールもできる
 
 package.jsonについて
 	package.jsonの存在するディレクトリが一つのパッケージの単位となる。プロジェクト。
@@ -33,10 +42,13 @@ package.jsonについて
 	依存パッケージのバージョンはpackage.jsonに記載できるが、依存パッケージの依存パッケージについては記載できないため、開発メンバー間で差異が出る。
 	そこでpackage-lock.jsonは依存パッケージの依存パッケージまでバージョンを記憶する。
 
-npm ci
-	package-lock.jsonに記載されたバージョン参照してnpm installを行う。もし、package.jsonの内容と差異があればエラーを出す。
-	install時に一度node_modulesの中身を削除するので、クリーンインストールもできる
-
+.npmrcについて
+	自分が所属している組織が所有していて、privateなパッケージをインストールする際に必要なnpmの設定ファイル。
+	//npm.pkg.github.com/:_authToken=
+	@OWNER:registry=https://npm.pkg.github.
+	こんな感じの中身になっている。パッケージのルートディレクトリにおいておけば、npmのインストール時に挙動を変えられる。
+		tokenの=にacces tokenを入れる
+		@OWNERにパッケージの所有者、registryの=にurlを入れる
 
 		
 ★javascript
