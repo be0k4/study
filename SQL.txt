@@ -175,6 +175,9 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 	テーブルを削除する。CASCADEでこのテーブルに依存するオブジェクトも削除する	
 
 ★PL/SQL★
+・INOUTパラメータ
+	C#の参照渡しと同じ
+
 ・カラムを含むテーブルを取得
 SELECT table_name column_name
   FROM information_schema.columns
@@ -203,7 +206,7 @@ SELECT table_name column_name
 	変数にSELECTでとってきた要素を代入
 	SELECTの結果が1件も返さない、もしくは1行以上返す場合はerrorを吐く
 
-・RAISE INFO %, 変数;
+・raise notice 'pi_fzn_rgst:% ', pi_fzn_rgst;
 	変数の中身を表示する。%に変数が代入される
 
 ・条件分岐
