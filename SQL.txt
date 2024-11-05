@@ -36,6 +36,7 @@ SELECT * FROM テーブル名 WHERE NOT カラム名 = 'SAMPLE'
 SELECT * FROM テーブル名 WHERE 条件式 ORDER BY カラム名 DESC
 	条件指定した対象に対してソートをする
 	ASC、DESCは最後に記述
+	ORDER BYにはSELECT句で使用していないカラムも指定できる
 
 ・範囲で抽出
 SELECT * FROM テーブル名 WHERE カラム名 BETWEEN A AND B
@@ -150,8 +151,11 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 
 ・With句
 	WITH 名前 AS (SELECT 列名 FROM テーブル)
-	SQLの冒頭で記述することで、サブクエリを作成できる。
-	可読性の向上やメンテナンス性の向上につながる	
+	, 名前 AS()
+	, 名前 AS()
+	SQLの冒頭で記述することで、サブクエリを作成できる。複数書くこともできる。
+	可読性の向上やメンテナンス性の向上につながる
+		
 
 ・UNION ALL
 	SELECT ~
@@ -169,10 +173,15 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 	   1	1	2
 	   2	1	2
 	   3	1	2
-みたいな感じで、他のカラムとくっつく。連番を振りたい時に使う。
+	みたいな感じで、他のカラムとくっつく。連番を振りたい時に使う。
 
 ・DROP TABLE テーブル名 CASCADE
 	テーブルを削除する。CASCADEでこのテーブルに依存するオブジェクトも削除する	
+
+
+・view
+	stored(保管)されるプロシージャやファンクションのようなもの。
+	viewの実態はSELECT文
 
 ★PL/SQL★
 ・INOUTパラメータ
