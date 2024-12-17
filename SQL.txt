@@ -179,32 +179,22 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 	テーブルを削除する。CASCADEでこのテーブルに依存するオブジェクトも削除する	
 
 
-・view
-	stored(保管)されるプロシージャやファンクションのようなもの。
-	viewの実態はSELECT文
-
-★PL/SQL★
+★pl/pgsql PostgreSQL★
 ・INOUTパラメータ
 	C#の参照渡しと同じ
 
-・カラムを含むテーブルを取得
-SELECT table_name column_name
-  FROM information_schema.columns
-    WHERE column_name ='';
-
-
 ・jsonは文字列を::jsonでキャスト可能
-無理ならエラーが出る
+	無理ならエラーが出る
 
 
-・DECLARE
-	変数等の宣言部
-  BEGIN
-	処理部
-　EXCEPTION
+・pl/pgSQLの書き方
+	DECLARE
+		変数等の宣言部
+  	BEGIN
+		処理部
+　	EXCEPTION
 	//Exceptionはそれが含まれるブロック内でエラーをキャッチする
-　END	
-
+　	END
 
 ・%TYPE
 	変数の型やサイズを参照できる
@@ -219,45 +209,78 @@ SELECT table_name column_name
 	変数の中身を表示する。%に変数が代入される
 
 ・条件分岐
- IF　... THEN
- ELSEIF ...　THEN
- END IF;
+	IF　... THEN
+	ELSEIF ...　THEN
+	END IF;
 
 ・単純なループ
- LOOP
- 処理部
- EXIT;--ループを抜け出す
- LOOP END;
+	LOOP
+	処理部
+	EXIT;--ループを抜け出す
+	LOOP END;
 
 ・FORループ
-数値から数値までの回数ループを行う
-
- FOR i IN 数値..数値 LOOP
- 処理
- END LOOP
+	ループを行う
+ 	FOR IN 数値..数値 LOOP
+	処理
+	END LOOP
 
 ・カーソル
-問い合わせの結果を1行ずつ取り出せるオブジェクト
+	問い合わせの結果を1行ずつ取り出せるオブジェクト
 
- カーソル名 CURSOL IS 問い合わせ; --カーソルの定義
+ 	カーソル名 CURSOL IS 問い合わせ; --カーソルの定義
+	OPEN カーソル名; --カーソルの生成
+	ETCH カーソル名 INTO 変数名　カーソルから行取り出して変数に代入する
+	LOSE カーソル名 --カーソルの破棄。メモリを確保できる
 
- OPEN カーソル名; --カーソルの生成
-
- FETCH カーソル名 INTO 変数名　カーソルから行取り出して変数に代入する
-
- CLOSE カーソル名 --カーソルの破棄。メモリを確保できる
-
-★カーソルループ
-	FOR文に組み込むことで、カーソルの定義以外を省略できる。
+・カーソルループ
+	FOR文に組み込むことで、上記のカーソルの定義以外を省略できる。
 	FOR ループ変数名 IN カーソル名 LOOP
 	処理
 	END LOOP
 	
 	ループ変数はレコードと同じ型になるので、ループ変数名.カラム名でアクセスする。
-	全てのレコードをFETCHするとループ終了する
+	全てのレコードをFETCHし終わるとループ終了する
 
 ・PERFORM
-実行結果が不要な場合に使う。
-PERFORM FUNCTION()
-PERFORM * FROM ~ 
+	実行結果が不要な場合に使う。
+	PERFORM FUNCTION()
+	PERFORM * FROM ~ 
 	SELECT の代わりにPERFORMを使う。
+
+・トリガーとは
+	特定のテーブル(またはそのカラム)へのInsert Update Delete等のタイミングで実行する処理を定義する。
+	ビューや索引同様テーブルに依存したオブジェクトである。ﾄﾘｶﾞｰは処理部をﾄﾘｶﾞｰ関数に持つ。
+	<ﾄﾘｶﾞｰの作成>
+	CREATE TRIGGER after_delete_trigger　　　トリガー名
+	AFTER DELETE ON main_table		条件
+	FOR EACH ROW
+	EXECUTE FUNCTION log_delete();　　	トリガ関数名
+	
+	PL/pgSQL関数がトリガとして呼び出された場合、いくつかの特殊な変数が自動的に最上位レベルのブロックで作成されます。
+		<代表的なもの>
+		NEW RECORD型　新しいデータベースの行をもつ。DELRTEではNULLとなっている
+		OLD RECORD型　古いデータベースの行をもつ。
+
+・トリガー関数
+	CREATE OR REPLACE FUNCTION log_insert()
+	RETURNS TRIGGER AS $$
+	BEGIN
+  	INSERT INTO logs (log_entry) VALUES ('New record inserted into main_table');
+  	RETURN NEW;
+	END;
+	$$ LANGUAGE plpgsql;
+	
+	引数は持たない。
+	ﾄﾘｶﾞｰ関数の戻り値は、NULLもしくはそのﾄﾘｶﾞｰの発行元となったテーブルの構造をもつデータ(OLDやNEW)を返す必要がある。(AFTERの場合は完全に無視されるのでNULLでok)
+	ﾄﾘｶﾞｰ関数の戻り値はﾄﾘｶﾞｰの呼び出し元となったSQLの結果として反映される。
+		<例>
+		そのままNEWを返すと普通にﾄﾘｶﾞｰの発行元になったSQLの結果が返される
+		NEW.カラム名でデータを編集したり、してNEWを返すと発行元のSQLを加工した結果が返る
+		OLDを返して何も変更が起きないようにもできる
+	
+
+
+
+
+
