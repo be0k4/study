@@ -113,9 +113,13 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 ・OVER()
 集計関数() OVER()で記述
 	集計関数と一緒に使用する。各行に集計結果が表示される。
-	OVER (PARTITION BY) 結果を指定したカラム名でグルーピングする
-	OVER (PARTION BY ~ ORDER BY~)グルーピングされた中で、集計結果を行区切りで表示する
 
+	OVER (PARTITION BY) 
+		指定したカラムでグルーピングした結果が表示される。カラムAをもつレコードはすべて同じ結果
+
+	OVER (PARTION BY ~ ORDER BY~)
+		partitionで指定したカラムのレコードグループを、order byで指定したカラムの結果ごとに行単位で計上していく。
+		
 ・||文字列連結
 
 ・TIMESTAMP型	
