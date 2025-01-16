@@ -284,7 +284,28 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 		OLDを返して何も変更が起きないようにもできる
 	
 
+★Oracle
 
+・DBMS_OUTPUT.PUT_LINE();
+	デバッグ出力
 
+・user_errorsビュー
+	スキーマ内のオブジェクトのエラーを確認できる
 
+・トリガー
 
+CREATE TRIGGER after_delete_trigger　　　トリガー名
+      AFTER DELETE ON main_table          条件
+      FOR EACH ROW
+      BEGIN
+      		IF INSERTING THEN
+        		DBMS_OUTPUT.PUT_LINE('Insert operation detected');
+    		ELSIF UPDATING THEN
+        		DBMS_OUTPUT.PUT_LINE('Update operation detected');
+    		ELSIF DELETING THEN
+       			DBMS_OUTPUT.PUT_LINE('Delete operation detected');
+    		END IF;
+END;
+
+postgresと違い、トリガーに処理をべた書きする。
+postgres同様に :NEW :OLDでレコードを参照する。
