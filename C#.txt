@@ -1,0 +1,8 @@
+・DataTable型
+	テーブルを疑似的に再現したもの。2次元配列より直感的に操作が可能。
+	DataTable table = new DataTable("SampleTable");
+	table.Columns.Add("ID", typeof(int));
+	DataRow row1 = table.NewRow();
+	row1["ID"] = 1;
+	table.Rows.Add(row1);
+	データベースの問い合わせ結果をDatatableに格納することがよくある
