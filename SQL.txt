@@ -287,7 +287,7 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 ★Oracle
 
 ・DBMS_OUTPUT.PUT_LINE();
-	デバッグ出力
+	デバッグ出力する組み込みプロシージャ
 
 ・user_errorsビュー
 	スキーマ内のオブジェクトのエラーを確認できる
