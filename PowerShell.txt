@@ -1,3 +1,4 @@
+★基礎知識
 拡張子について
 	スクリプトファイルは.ps1
 
@@ -10,9 +11,10 @@
 実行ポリシーについて
 	スクリプトの実行にはポリシーの設定が必要。ポリシーを設定するには管理者権限でpowershellを開く必要があるので注意
 	Get-ExecutionPolicy　ポリシーの取得
-	Set-ExecutionPolicy RemoteSigned ポリシーの設定
-
-	一時的にポリシーを設定したり、タスクスケジューラで設定することも可能
+	Set-ExecutionPolicy ポリシーの設定
+	-ExecutionPolicy プロセススコープで権限を有効にする
+	GroupPolicyなどでRemoteSignedなどになっている場合は外部からダウンロードしたスクリプトは使用できない
+	
             
 モジュールについて
 	標準のpowershellスクリプト以外にも、モジュールを公式のリポジトリからインストールすることで今後使用することができるようになる
@@ -20,6 +22,7 @@
 	Get-InstalledModule -Name ImportExcel モジュールが既にインストールされているかの確認
 	Import-Module ImportExcel　インポートすることで読み込めるようになる
 
+★基本文法
 オブジェクトについて
 	powershellではすべてのコマンドの戻り値がオブジェクトとして返される
 	オブジェクト指向言語と同様にプロパティと、メソッドを持つ
@@ -27,10 +30,10 @@
       
 変数の宣言
 	$~で変数を宣言できる
-
+	$_は現在参照しているオブジェクト
+	
 パイプライン
-	｜はコマンド(オブジェクト)を次のコマンドに渡すための仕組み。
-	入力が必要なコマンド(オブジェクトに対して何らかの操作を行うコマンド)に渡すオブジェクトを|を使用して簡単に渡せる。メソッドチェーンに近い。
+	｜はコマンド(オブジェクト)を次のコマンドに渡すための仕組み。メソッドチェーンに近い。
 
 関数の定義
 	function メソッド名{ 処理 }
@@ -43,19 +46,27 @@
 		キー = 値
 	}
 
-型の指定
-	動的型付け言語なので、明示的に型を指定する必要はないが
-	[]を変数の前につけることでプロパティの型を指定できる
+	型の指定・・・動的型付け言語なので、明示的に型を指定する必要はないが[]を変数の前につけることでプロパティの型を指定できる
 
-よく使うコマンド
-Get-ChildItem -Path パス -Recurse -File | Select-String -Pattern "検索したい文字列" -CaseSensitive:$false
 
--ErrorAction SilentlyContinue は全コマンドレットのオプション
+
+★よく使うコマンド
+・Get-ChildItem -Path パス -Recurse -File | Select-String -Pattern "検索したい文字列" -CaseSensitive:$false　grepをかけるコマンド
+
+・-ErrorAction SilentlyContinue は全コマンドレットのオプション
 	エラーが出た場合にエラーを無視してnullを返す。if文の中ではfalseになる
 
-cmd /c "" PowerShellでサポートされていないコマンドも実行可能。コマンドプロンプト用のコマンドはこれで実行する
+・cmd /c "" PowerShellでサポートされていないコマンドも実行可能。コマンドプロンプト用のコマンドはこれで実行する
 
-Write-Output ""　ターミナルへ出力
+・Write-Output ""　ターミナルへ出力
+
+・Format-Table / Format-List 表形式、もしくは縦にリスト形式の文字列に変換する
+
+・Out-File -FilePath <パス> -Encoding <エンコード方法>　 ファイルに出力
+
+
+
+
 
 
 
