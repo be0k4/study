@@ -25,5 +25,6 @@ apt(Advanxed Package Tool)
 		
 ★よく使うコマンド
 ・ cd ~/ ~はホームを示す
+・touch
 		
 		
