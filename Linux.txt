@@ -22,7 +22,7 @@ apt(Advanxed Package Tool)
 		apt search <パッケージ名> パッケージを探す
 		apt list --installed | grep <パッケージ名> ペッケージ名/リポジトリ名, now～の形式でインストール済みパッケージを表示
 		apt remove <パッケージ名>
-		
+
 ★よく使うコマンド
 ・ cd ~/ ~はホームを示す
 ・touch
