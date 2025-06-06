@@ -1,124 +1,9 @@
-SQLまとめ
-
-SELECT文
-・カラム名(列)を指定
-SELECT カラム名,カラム名,カラム名 FROM テーブル名
-
-・排他ロック
-	SELECT文の末尾に　FOR UPDATEを記述することで、コミットかロールバックされるまで対象のレコードを更新、ロックできない。
-
-・全取得
-SELECT * FROM テーブル名
-
-エイリアス
-	テーブル名、カラム名が長い場合はASで別名に変換することが可能。
-	エイリアスはWHERE句やサブクエリ内で使用できない。
 
 
-・演算子の利用
-SELECT カラム名*10 FROM テーブル名
-SELECT カラム名/10 FROM テーブル名
 
-・条件指定WHERE句
-SELECT * FROM テーブル名 WHERE カラム名 >= 0
-SELECT * FROM テーブル名 WHERE カラム名 = 'SAMPLE'
-SELECT * FROM テーブル名 WHERE カラム名 = 'SAMPLE AND カラム名 >= 0
-	文字列は''で囲む必要がある
-	AND ORで複合条件が可能
 
-・条件指定(NOT)
-SELECT * FROM テーブル名 WHERE NOT カラム名 = 'SAMPLE'
-	NOTは条件式の前に記述
-
-	where 1=1でクエリが書きやすくなる。条件の追加時にandを書けばよいだけだから
-
-・ソート
-SELECT * FROM テーブル名 WHERE 条件式 ORDER BY カラム名 DESC
-	条件指定した対象に対してソートをする
-	ASC、DESCは最後に記述
-	ORDER BYにはSELECT句で使用していないカラムも指定できる
-
-・範囲で抽出
-SELECT * FROM テーブル名 WHERE カラム名 BETWEEN A AND B
-			　　　 カラム名 >= A AND カラム名 <= Bと同じ
-
-・パターンマッチング
-SELECT * FROM テーブル名 WHERE カラム名 LIKE '%SAMPLE%'
-	%は0文字以上の任意の文字列
-	_1文字以上の任意の文字列
-
-・グループ化
-SELECT カラムA,集合関数() FROM テーブル名 GROUP BY カラムA
-	GROUP BYで指定したカラムが同じ値のデータをひとまとめにする
-	一度GROUP BYを使用すると、SELECTではGROUP BYで指定したカラムしか指定できない
-
-・グループ化への条件指定
-SELECT カラムA,集合関数() FROM テーブル名 GROUP BY カラムA HAVING 条件式
-	WHEREは条件指定を行った後にグループ化を行うが、HAVINGはグループ化を行った後に条件指定をする
-
-・重複行の排除
-SELECT DISTINCT カラム名 FROM　テーブル名
-
-・レコードの追加
-INSERT INTO テーブル名(カラム名,カラム名...) VALUES (値,値)
-	テーブルの全項目に値を追加する場合は(カラム名)を省略可
-	VALUESの代わりにSELECT文で挿入することもできる
 	
-・レコードの更新
-UPDATE テーブル名 SET カラム名=値,カラム名 = 値... WHERE 条件式
 
-UPDATEでLIMITやJOINを使う方法
-	WHERE句の中でサブクエリを使う
-	UPDATE テーブルA SET カラム名=値 WHERE テーブルA.~ IN (SELECT~ LIMIT)
-
-postgreSQL特有の機能
-	UPDATEにFROMをつけてテーブルをJOINできる
-	UPDATE テーブルA SET カラム名=値,カラム名 = 値 FROM テーブルB WHERE 条件式
-
-・レコードの削除
-DELETE FROM テーブル名 WHERE 条件式
-
-・条件結合
-内部結合
-SELECT 列名
-FROM テーブル1
-INNER JOIN テーブル2
-ON テーブル1.キーとなる列名 = テーブル2.キーとなる列名
-INNER JOIN テーブル3
-ON.....
-	共通となる列をONで指定し、二つのテーブルをくっつける
-	結合条件がどちらかに存在しない場合、そのデータは省かれる
-
-外部結合
-LEFT/RIGHT/FULL OUTER JOIN
-	LEFT、RIGHTで指定した側のテーブルは全てのデータを含む。
-	外部結合は、結合条件がどちらかにしか存在しない場合もくっつける。その場合NULLが入る。
-
-テーブル結合の際は1対1の場合レコードの数に変化はないが、1対Nの場合は増殖するのでそこを意識して結合を行うように。
-
-
-・副問い合わせ(サブクエリ)
-SELECT * FROM テーブル名 WHERE カラム名 = (SELECT ...)
-	条件式にSELECTを使用する。SELECT...の結果比較可能な値を返す必要がある
-
-・IN
-SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
-	カラム名 = 値 OR カラム名 = 値Bと同じ意味
-
-・LIMIT 1　１件のみ取り出す
-
-・COUNT(*)はNULL行も含めてカウント。
-	count(distinct) 指定したカラムから重複を除いてカウントする
-	
-・OVER()
-集計関数() OVER()で記述
-	集計関数と一緒に使用する。各行に集計結果が表示される。
-
-	OVER (PARTITION BY) 
-		指定したカラムでグルーピングした結果が表示される。カラムAをもつレコードはすべて同じ結果
-
-	OVER (PARTION BY ~ ORDER BY~)
-		partitionで指定したカラムのレコードグループを、order byで指定したカラムの結果ごとに行単位で計上していく。
 		
 ・||文字列連結
 
@@ -168,16 +53,6 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 	テーブルのレコードを一つに統合する。2つのSELECTの結果、カラム数やデータ型が同じである必要がある。
 	特定の値と紐づくテーブル、紐づかないテーブルの結果をUNIONすることで、二つの場合のSQL文をひとつで書ける。
 
-・GENERATE_SERIES(start, stop, step)
-	startからstopまでを連番で表示する。stepで間隔を指定する。
-	SELECT句で指定する場合少し癖がある。
-	SELECT GENERATE_SERIES(1, 3) AS NO, 1 AS ANOTHER, 2 AS OTHER;
-
-	→ NO	ANOTHER	OTHER
-	   1	1	2
-	   2	1	2
-	   3	1	2
-	みたいな感じで、他のカラムとくっつく。連番を振りたい時に使う。
 
 ・DROP TABLE テーブル名 CASCADE
 	テーブルを削除する。CASCADEでこのテーブルに依存するオブジェクトも削除する	
@@ -252,39 +127,16 @@ SELECT * FROM テーブル名 WHERE カラム名 IN (値A,値B)
 	PERFORM * FROM ~ 
 	SELECT の代わりにPERFORMを使う。
 
-・トリガーとは
-	特定のテーブル(またはそのカラム)へのInsert Update Delete等のタイミングで実行する処理を定義する。
-	ビューや索引同様テーブルに依存したオブジェクトである。ﾄﾘｶﾞｰは処理部をﾄﾘｶﾞｰ関数に持つ。
-	<ﾄﾘｶﾞｰの作成>
-	CREATE TRIGGER after_delete_trigger　　　トリガー名
-	AFTER DELETE ON main_table		条件
-	FOR EACH ROW
-	EXECUTE FUNCTION log_delete();　　	トリガ関数名
-	
-	PL/pgSQL関数がトリガとして呼び出された場合、いくつかの特殊な変数が自動的に最上位レベルのブロックで作成されます。
-		<代表的なもの>
-		NEW RECORD型　新しいデータベースの行をもつ。DELRTEではNULLとなっている
-		OLD RECORD型　古いデータベースの行をもつ。
-
-・トリガー関数
-	CREATE OR REPLACE FUNCTION log_insert()
-	RETURNS TRIGGER AS $$
-	BEGIN
-  	INSERT INTO logs (log_entry) VALUES ('New record inserted into main_table');
-  	RETURN NEW;
-	END;
-	$$ LANGUAGE plpgsql;
-	
-	引数は持たない。
-	ﾄﾘｶﾞｰ関数の戻り値は、NULLもしくはそのﾄﾘｶﾞｰの発行元となったテーブルの構造をもつデータ(OLDやNEW)を返す必要がある。(AFTERの場合は完全に無視されるのでNULLでok)
-	ﾄﾘｶﾞｰ関数の戻り値はﾄﾘｶﾞｰの呼び出し元となったSQLの結果として反映される。
-		<例>
-		そのままNEWを返すと普通にﾄﾘｶﾞｰの発行元になったSQLの結果が返される
-		NEW.カラム名でデータを編集したり、してNEWを返すと発行元のSQLを加工した結果が返る
-		OLDを返して何も変更が起きないようにもできる
 	
 
 ★Oracle
+・ROWNUMBER() 
+	連番を振るだけの集計関数。OVER()とセットで使うのがほとんど
+
+・OVER()
+	集計関数() OVER()各行に表示
+	ROWNUMBER() OVER(ORDER BY <対象カラム> DESC) where ROWNUMBER = 1 対象カラムの最大値を得る
+	ROWNUMBER() OVER(PARTITION　BY <A>,<B>) ABについてグループ化して、連番を振る
 
 ・DBMS_OUTPUT.PUT_LINE();
 	デバッグ出力する組み込みプロシージャ
