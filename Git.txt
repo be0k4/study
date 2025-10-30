@@ -60,4 +60,11 @@ gitコマンド
 
 ・直近のコミットメッセージを変更
 	git commit --amend -m "メッセージ"
+
+・直近のコミットにファイルを追加する方法
+	git commit --amend --no-edit　ステージング済みのファイルを過去のコミットに含む
+
+・リモートブランチの先頭が変わっていないことを確認してから、履歴を上書きする（git commit --amendの後で使用）
+	git push --force-with-lease
+
 	

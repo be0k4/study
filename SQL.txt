@@ -1,10 +1,3 @@
-
-
-
-
-	
-
-		
 ・||文字列連結
 
 ・TIMESTAMP型	
@@ -127,7 +120,11 @@
 	PERFORM * FROM ~ 
 	SELECT の代わりにPERFORMを使う。
 
+・コスト計測を行う
+	EXPLAIN ANALYZE
+ 	SELECT ~
 	
+	UPDATEの場合、EXPLAINのみで、更新を行わず計測のみ行う
 
 ★Oracle
 ・ROWNUMBER() 
