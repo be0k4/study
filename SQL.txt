@@ -31,6 +31,11 @@
 		WHEN　式　THEN 値
 	END
 
+・条件一致のORDER BY
+	ORDER BYの中で CASE WHEN sku_cd = pi_sku_cd THEN 0 ELSE 1 ASC
+	のように条件式を追加することで、条件に一致する行の昇順降順が可能
+　	これは条件式から0/1のれるを生成し、それを評価している
+
 ・With句
 	WITH 名前 AS (SELECT 列名 FROM テーブル)
 	, 名前 AS()
