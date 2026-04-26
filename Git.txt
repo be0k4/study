@@ -22,7 +22,8 @@ gitについて
 	ex)・ *.out 特定の拡張子を無視
 	　 ・sample.log　特定のファイルを無視する
 	　 ・/bin/ 特定のディレクトリを無視
-	.gitignoreファイルはメモ帳を保存する際に.gitiggnore.で保存すればよい	
+	.gitignoreファイルはメモ帳を保存する際に.gitiggnore.で保存すればよい
+　	gitignoreで管理外にしたファイルはブランチを切り替えた先でgitignoreで管理外にしていない場合、変更として追跡されてしまうので注意
 
 
 gitコマンド
