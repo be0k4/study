@@ -1,69 +1,4 @@
-・||文字列連結
-
-・TIMESTAMP型	
-	"2019-03-01 10:00:00"
-	(日付　+ 時刻)
-
-・TIMESTAMP型にする
-	TO＿TIMESTAMP(文字列, ‘YYYY-MM-DD HH24:MI:00')←フォーマット指定可
-	フォーマットが違う場合比較できない。なので文字列に変換して比較を行うとよい。
-
-・DATE、TIMEを取り出す
-	CAST(TIMESTAMP AS DATE,TIME)
-
-・文字列置換
-	REPLACE(文字列, 置換前の文字列, 置換後の文字列)
-
-・interval型 
-	時間間隔を表現する。 + -等の算術演算子を用いてtimestamp型を加工できる 
-	SELECT column_time + interval '30 minutes' FROM table;
-
-・COALESCE(引数1, 引数2) nullでない最初の引数を返す
-
-・EXISTS(SELECT ~)問い合わせの内容が存在するか否かをtrue or falseで返す
- NOT EXIST(SELECT) 紐づかない条件
-	紐づかない条件は、外部結合の結合条件のカラムがnullであることで確認もできる
-
-
-・CASE式
-	CASE
-		WHEN　式　THEN 値
-		WHEN　式　THEN 値
-	END
-
-・条件一致のORDER BY
-	ORDER BYの中で CASE WHEN sku_cd = pi_sku_cd THEN 0 ELSE 1 ASC
-	のように条件式を追加することで、条件に一致する行の昇順降順が可能
-　	これは条件式から0/1のれるを生成し、それを評価している
-
-・With句
-	WITH 名前 AS (SELECT 列名 FROM テーブル)
-	, 名前 AS()
-	, 名前 AS()
-	SQLの冒頭で記述することで、サブクエリを作成できる。複数書くこともできる。
-	可読性の向上やメンテナンス性の向上につながる
-		
-
-・UNION ALL
-	SELECT ~
-	UNION ALL
-	SELECT ~
-	テーブルのレコードを一つに統合する。2つのSELECTの結果、カラム数やデータ型が同じである必要がある。
-	特定の値と紐づくテーブル、紐づかないテーブルの結果をUNIONすることで、二つの場合のSQL文をひとつで書ける。
-
-
-・DROP TABLE テーブル名 CASCADE
-	テーブルを削除する。CASCADEでこのテーブルに依存するオブジェクトも削除する	
-
-
-★pl/pgsql PostgreSQL★
-・INOUTパラメータ
-	C#の参照渡しと同じ
-
-・jsonは文字列を::jsonでキャスト可能
-	無理ならエラーが出る
-
-
+★PostgreSQL
 ・pl/pgSQLの書き方
 	DECLARE
 		変数等の宣言部
@@ -77,24 +12,9 @@
 	変数の型やサイズを参照できる
 	e_deptno  dept.deptno%TYPE; 
 
-
 ・SELECT 要素 INTO STRICT 変数 
 	変数にSELECTでとってきた要素を代入
 	SELECTの結果が1件も返さない、もしくは1行以上返す場合はerrorを吐く
-
-・raise notice 'pi_fzn_rgst:% ', pi_fzn_rgst;
-	変数の中身を表示する。%に変数が代入される
-
-・条件分岐
-	IF　... THEN
-	ELSEIF ...　THEN
-	END IF;
-
-・単純なループ
-	LOOP
-	処理部
-	EXIT;--ループを抜け出す
-	LOOP END;
 
 ・FORループ
 	ループを行う
@@ -102,20 +22,11 @@
 	処理
 	END LOOP
 
-・カーソル
-	問い合わせの結果を1行ずつ取り出せるオブジェクト
-
- 	カーソル名 CURSOL IS 問い合わせ; --カーソルの定義
-	OPEN カーソル名; --カーソルの生成
-	ETCH カーソル名 INTO 変数名　カーソルから行取り出して変数に代入する
-	LOSE カーソル名 --カーソルの破棄。メモリを確保できる
-
 ・カーソルループ
 	FOR文に組み込むことで、上記のカーソルの定義以外を省略できる。
 	FOR ループ変数名 IN カーソル名 LOOP
 	処理
 	END LOOP
-	
 	ループ変数はレコードと同じ型になるので、ループ変数名.カラム名でアクセスする。
 	全てのレコードをFETCHし終わるとループ終了する
 
@@ -128,41 +39,71 @@
 ・コスト計測を行う
 	EXPLAIN ANALYZE
  	SELECT ~
-	
 	UPDATEの場合、EXPLAINのみで、更新を行わず計測のみ行う
 
+★RLS関連
+・RLSのかかったテーブル操作には
+1.スキーマへの権限
+	GRANT USAGE ON SCHEMA public TO target_role;
+2.DML権限
+	GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.target_table TO target_role;
+3.ポリシー
+	CREATE POLICY target_table_all_policy --RLSポリシー(ポリシーは行単位の権限)
+	ON public.target_table
+	FOR ALL --すべての操作
+	TO target_role
+	USING (tenant_id = current_setting('app.tenant_id')::int)
+	WITH CHECK (tenant_id = current_setting('app.tenant_id')::int);
+が必要
+
+・ユーザーに付与された権限を確認
+SELECT
+    r.rolname AS user_name,
+    m.rolname AS granted_role
+FROM pg_auth_members am
+JOIN pg_roles r
+    ON am.member = r.oid
+JOIN pg_roles m
+    ON am.roleid = m.oid
+WHERE r.rolname = '対象ユーザー名';
+
+
+・ロールに付与された権限（ロールは権限の箱）
+SELECT
+    grantee,
+    table_schema,
+    table_name,
+    privilege_type
+FROM information_schema.role_table_grants
+WHERE grantee = '対象ロール名'
+ORDER BY
+    table_schema,
+    table_name,
+    privilege_type;
+
+・ロールに付与されたポリシー
+SELECT
+    schemaname,
+    tablename,
+    policyname,
+    permissive,
+    roles,
+    cmd,
+    qual,
+    with_check
+FROM pg_policies
+WHERE '対象ロール名' = ANY (roles)
+ORDER BY
+    schemaname,
+    tablename,
+    policyname;
+
 ★Oracle
-・ROWNUMBER() 
-	連番を振るだけの集計関数。OVER()とセットで使うのがほとんど
 
 ・OVER()
 	集計関数() OVER()各行に表示
 	ROWNUMBER() OVER(ORDER BY <対象カラム> DESC) where ROWNUMBER = 1 対象カラムの最大値を得る
 	ROWNUMBER() OVER(PARTITION　BY <A>,<B>) ABについてグループ化して、連番を振る
 
-・DBMS_OUTPUT.PUT_LINE();
-	デバッグ出力する組み込みプロシージャ
-
 ・user_errorsビュー
 	スキーマ内のオブジェクトのエラーを確認できる
-
-・トリガー
-
-CREATE TRIGGER after_delete_trigger　　　トリガー名
-      AFTER DELETE ON main_table          条件
-      FOR EACH ROW
-      BEGIN
-      		IF INSERTING THEN
-        		DBMS_OUTPUT.PUT_LINE('Insert operation detected');
-    		ELSIF UPDATING THEN
-        		DBMS_OUTPUT.PUT_LINE('Update operation detected');
-    		ELSIF DELETING THEN
-       			DBMS_OUTPUT.PUT_LINE('Delete operation detected');
-    		END IF;
-END;
-
-postgresと違い、トリガーに処理をべた書きする。
-postgres同様に :NEW :OLDでレコードを参照する。
-
-・DECODE(列名, 値, 結果1, 値, 結果2, 結果3)
-      ある列の値が、値と一致していた場合に結果を返す。switch文的なもの。結果3は全部に当てはまらなかったとき
