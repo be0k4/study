@@ -1,0 +1,63 @@
+1.Docker
+	別のOSを作成するけど、完全にゲストOSを起動するわけではなくホストOSのコアリソースを使用するため軽量。
+	クラスとインスタンスの関係で、イメージ(設計書)とコンテナ(実行物)の概念がある。
+	
+	データの永続化とネットワーク
+		ボリュームマウント・・・ホストPCのフォルダと、コンテナ内のフォルダを同期させる仕組み
+		ポートフォワーディング・・・ホストPCの特定ポートを、コンテナ内のポートへ転送する仕組み
+
+	
+2.よく使うコマンド
+	
+	1.イメージのダウンロード
+	docker pull ubuntu:latest
+	
+	2.ローカルのイメージ一覧
+	docker images
+	
+	3.コンテナの起動
+	docker run -it --name my-ubuntu ubuntu:latest /bin/bash
+	
+	4.コンテナの稼働状態を確認
+	docker ps -a
+	
+	5.コンテナの起動と停止
+	# 起動
+	docker start my-ubuntu
+	# 停止
+	docker stop my-ubuntu
+	
+	6.コンテナの削除
+	docker rm my-ubuntu
+	
+	7.イメージの削除
+	docker rmi ubuntu:latest
+
+	8.postgresをDockerで初期化
+	# Postgresのイメージをダウンロード
+	docker pull postgres:15
+
+	# データを保存するためのボリュームを作成
+	docker volume create my-pgdata
+	
+	# ボリュームの情報を表示
+	docker volume inspect [フォルダ名]_[ボリューム名]
+
+	# オプションをてんこ盛りにしてコンテナを起動！
+	docker run -d \
+	  --name my-postgres \
+	  -p 5432:5432 \
+	  -e POSTGRES_PASSWORD=mysecretpassword \
+	  -v my-pgdata:/var/lib/postgresql/data \
+	  --log-opt max-size=10m \
+	  --log-opt max-file=3 \
+	  postgres:15
+	  
+3.Docker-Composeについて
+	コンテナの設定をYAMLファイルで保存するのが今の主流
+	docker-compose.ymlがあるディレクトリで
+	docker-compose up -dで起動可能
+	
+	
+	dockerimagesの起動オプションについてはdocker公式のdockerhubで確認が可能
+	

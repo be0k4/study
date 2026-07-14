@@ -52,9 +52,12 @@ gitについて
 ・コミットの打ち消し
 	git revert <ハッシュ値> 指定したコミットを打ち消すコミットをローカルリポジトリ内で行う。
 
+・ある時点のソースを取得
+	git checkout -b <ブランチ名> <コミットID>　コミットIDを指定してチェックアウトすることで、そのコミットの修正だけでなく一式が手に入る
+
 ・ほかのブランチの修正を反映
 	git cherry-pick<ハッシュ値> 指定したコミットをﾁｪｯｸｱｳﾄしているブランチの直近に行う
-    git restore --source feature/mixed -- path/to/B_file1.ts path/to/B_file2.ts sourceのブランチで行ったすべてのコミットを含む、対象ファイルの完成形を現在のブランチへ取り込む
+	git restore --source feature/mixed -- path/to/B_file1.ts path/to/B_file2.ts sourceのブランチで行ったすべてのコミットを含む、対象ファイルの完成形を現在のブランチへ取り込む
 										分岐元のブランチを指定することで、すべてのコミットが行われる前の最初の状態に戻すこともできる
 ・直近のコミットを変更
 	git commit --amend -m "メッセージ" メッセージを変更
